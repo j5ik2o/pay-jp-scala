@@ -1,6 +1,5 @@
 package com.github.j5ik2o.payjp.scala
 
-import com.github.j5ik2o.payjp.scala.model.ClientErrorResponse
+import com.github.j5ik2o.payjp.scala.model.ClientError
 
-case class ClientException(clientErrorResponse: ClientErrorResponse)
-    extends Exception(s"occurred error: $clientErrorResponse")
+case class ClientException(clientErrorResponse: ClientError) extends Exception(s"occurred error: $clientErrorResponse")

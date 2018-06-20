@@ -1,7 +1,11 @@
 package com.github.j5ik2o.payjp.scala.model
 
-case class Currency(_value: String) {
-  private val toJava = java.util.Currency.getInstance(_value)
-  val value          = toJava.getCurrencyCode.toLowerCase
+import io.circe.Decoder
+
+case class Currency(value: String) {
   require(value == "jpy")
+}
+
+object Currency {
+  implicit val CurrencyDecoder: Decoder[Currency] = Decoder[String].map(Currency(_))
 }

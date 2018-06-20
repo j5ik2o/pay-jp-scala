@@ -73,7 +73,9 @@ lazy val library = (project in file("library")).settings(
   coreSettings ++ Seq(
     name := "pay-jp-scala",
     libraryDependencies ++= Seq(
-      "org.scalatest"     %% "scalatest"         % "3.0.5" % Test,
+      "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+//      "jp.pay"            % "payjp-android"      % "0.1.1" % Test,
+      "jp.pay"            % "payjp-java"         % "0.2.1" % Test,
       "commons-codec"     % "commons-codec"      % "1.11",
       "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % Test,
       "com.typesafe.akka" %% "akka-http"         % akkaHttpVersion,

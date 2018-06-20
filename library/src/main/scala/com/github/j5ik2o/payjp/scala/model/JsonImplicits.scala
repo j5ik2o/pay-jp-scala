@@ -2,7 +2,7 @@ package com.github.j5ik2o.payjp.scala.model
 
 import java.time.{ Instant, ZoneId, ZonedDateTime }
 
-import io.circe.{ Decoder, Encoder, KeyEncoder }
+import io.circe.{ Decoder, Encoder }
 
 trait JsonImplicits {
 
