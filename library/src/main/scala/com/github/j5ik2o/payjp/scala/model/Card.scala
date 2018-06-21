@@ -2,6 +2,7 @@ package com.github.j5ik2o.payjp.scala.model
 
 import java.time.ZonedDateTime
 
+import cats.Eq
 import io.circe.Decoder
 
 case class CardId(value: String) {
@@ -31,6 +32,10 @@ case class Card(id: CardId,
                 created: ZonedDateTime)
 
 object Card extends JsonImplicits {
+
+  implicit object CardEq extends Eq[Card] {
+    override def eqv(x: Card, y: Card): Boolean = x == y
+  }
 
   implicit val CardDecoder: Decoder[Card] = Decoder.forProduct17(
     "id",

@@ -17,7 +17,7 @@ case class Customer(id: CustomerId,
                     email: Option[String],
                     description: Option[String],
                     defaultCardId: Option[String],
-                    metaData: Map[String, String],
+                    metadata: Map[String, String],
                     cards: Collection[Card],
                     created: ZonedDateTime) {
   val `object` = "customer"

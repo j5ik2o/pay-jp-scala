@@ -18,7 +18,7 @@ case class Plan(id: PlanId,
                 nameOpt: Option[String],
                 trialDaysOpt: Option[Int],
                 billingDayOpt: Option[Int],
-                metaData: Map[String, String])
+                metadata: Map[String, String])
 
 object Plan {
 
