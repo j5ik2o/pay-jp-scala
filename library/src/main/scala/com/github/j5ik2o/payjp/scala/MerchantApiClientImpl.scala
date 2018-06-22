@@ -7,6 +7,7 @@ import monix.eval.Task
 
 class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     extends MerchantApiClient
+    with ApiClientSupport
     with QueryBuildSupport {
 
   // --- 顧客
@@ -479,4 +480,11 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Account](request, secretKey.value)
   }
+
+  def createToken(number: String, 
+  expMonth: Int, 
+  expYear: Int, cvc: Option[String] = None, 
+  addressState: Option[String], 
+  addressCity: Option[String], addressLine1: Option[String], addressLine2: Option[String], address_zip: Option[String], name: Option[Strngi]): Task[Token] = ???
+
 }

@@ -156,4 +156,11 @@ trait MerchantApiClient {
                    until: Option[ZonedDateTime] = None): Task[Collection[Transfer]]
 
   def getAccount(): Task[Account]
+
+  def createToken(number: String, 
+  expMonth: Int, 
+  expYear: Int, cvc: Option[String] = None, 
+  addressState: Option[String], 
+  addressCity: Option[String], addressLine1: Option[String], addressLine2: Option[String], address_zip: Option[String], name: Option[Strngi]): Task[Token]
+
 }

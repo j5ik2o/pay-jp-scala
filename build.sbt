@@ -1,4 +1,5 @@
 val coreSettings = Seq(
+  scalafmtOnCompile in ThisBuild := true,
   sonatypeProfileName := "com.github.j5ik2o",
   organization := "com.github.j5ik2o",
   scalaVersion := "2.12.6",
