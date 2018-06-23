@@ -2,6 +2,7 @@ package com.github.j5ik2o.payjp.scala.model
 
 import java.time.{ LocalDate, ZonedDateTime }
 
+import cats.Eq
 import io.circe.Decoder
 
 case class TransferId(value: String) {
@@ -9,6 +10,9 @@ case class TransferId(value: String) {
 }
 
 object TransferId {
+  implicit object TransferIdEq extends Eq[TransferId] {
+    override def eqv(x: TransferId, y: TransferId): Boolean = x == y
+  }
   implicit val TransferDecoder: Decoder[TransferId] = Decoder.decodeString.map(TransferId(_))
 }
 
@@ -17,7 +21,7 @@ case class Transfer(id: TransferId,
                     created: ZonedDateTime,
                     amount: Amount,
                     currency: Currency,
-                    status: TransferStatus,
+                    status: TransferStatusType,
                     charges: Collection[Charge],
                     scheduledDate: LocalDate,
                     summary: Summary,
@@ -29,6 +33,10 @@ case class Transfer(id: TransferId,
                     carriedBalance: Option[Int])
 
 object Transfer extends JsonImplicits {
+
+  implicit object TrasferEq extends Eq[Transfer] {
+    override def eqv(x: Transfer, y: Transfer): Boolean = x == y
+  }
 
   implicit val TransferDecoder: Decoder[Transfer] =
     Decoder.forProduct15(

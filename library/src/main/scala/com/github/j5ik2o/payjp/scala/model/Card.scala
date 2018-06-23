@@ -13,20 +13,41 @@ object CardId {
   implicit val CustomerCardIdDecoder: Decoder[CardId] = Decoder.decodeString.map(CardId(_))
 }
 
+/**
+  * カード。
+  *
+  * @param id
+  * @param brand
+  * @param livemode
+  * @param number
+  * @param expYear
+  * @param expMonth
+  * @param name
+  * @param country
+  * @param addressZip
+  * @param addressState
+  * @param addressCity
+  * @param addressLine1
+  * @param addressLine2
+  * @param cvcChecked
+  * @param fingerPrint
+  * @param customerId
+  * @param created
+  */
 case class Card(id: CardId,
                 brand: String,
-                liveMode: Boolean,
-                number: String,
+                livemode: Boolean,
+                number: Option[String],
                 expYear: Int,
                 expMonth: Int,
                 name: Option[String],
                 country: Option[String],
-                addressZip: String,
-                addressState: String,
+                addressZip: Option[String],
+                addressState: Option[String],
                 addressCity: Option[String],
                 addressLine1: Option[String],
                 addressLine2: Option[String],
-                cvc: String,
+                cvcChecked: String,
                 fingerPrint: String,
                 customerId: Option[CustomerId],
                 created: ZonedDateTime)
@@ -51,7 +72,7 @@ object Card extends JsonImplicits {
     "address_city",
     "address_line1",
     "address_line2",
-    "cvc",
+    "cvc_check",
     "fingerprint",
     "customer",
     "created"

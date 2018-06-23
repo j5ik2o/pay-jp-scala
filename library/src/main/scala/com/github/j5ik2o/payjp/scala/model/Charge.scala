@@ -11,6 +11,29 @@ object ChargeId {
   implicit val ChargeIdDecoder: Decoder[ChargeId] = Decoder.decodeString.map(ChargeId(_))
 }
 
+/**
+  * 支払い。
+  *
+  * @param id
+  * @param liveMode
+  * @param created
+  * @param amount
+  * @param currency
+  * @param paid
+  * @param expiredAt
+  * @param captured
+  * @param capturedAt
+  * @param customerId
+  * @param description
+  * @param failureCode
+  * @param failureMessage
+  * @param refunded
+  * @param amountRefunded
+  * @param refundReason
+  * @param subscriptionId
+  * @param metadata
+  * @param platformFee
+  */
 case class Charge(id: ChargeId,
                   liveMode: Boolean,
                   created: ZonedDateTime,
@@ -19,7 +42,7 @@ case class Charge(id: ChargeId,
                   paid: Boolean,
                   expiredAt: Option[ZonedDateTime],
                   captured: Boolean,
-                  capturedAt: ZonedDateTime,
+                  capturedAt: Option[ZonedDateTime],
                   customerId: Option[String],
                   description: Option[String],
                   failureCode: Option[String],
@@ -28,7 +51,7 @@ case class Charge(id: ChargeId,
                   amountRefunded: BigDecimal,
                   refundReason: Option[String],
                   subscriptionId: Option[String],
-                  metadata: Map[String, String],
+                  metadata: Option[Map[String, String]],
                   platformFee: Option[BigDecimal])
 
 object Charge extends JsonImplicits {

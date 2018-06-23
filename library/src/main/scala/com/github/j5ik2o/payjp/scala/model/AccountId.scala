@@ -2,6 +2,7 @@ package com.github.j5ik2o.payjp.scala.model
 
 import java.time.ZonedDateTime
 
+import cats.Eq
 import io.circe.Decoder
 
 case class AccountId(value: String) {
@@ -9,12 +10,21 @@ case class AccountId(value: String) {
 }
 
 object AccountId {
+
+  implicit object AccountIdEq extends Eq[AccountId] {
+    override def eqv(x: AccountId, y: AccountId): Boolean = x == y
+  }
+
   implicit val AccountIdDecoder: Decoder[AccountId] = Decoder.decodeString.map(AccountId(_))
 }
 
 case class Account(id: AccountId, email: Option[String], merchant: Account.Merchant, created: ZonedDateTime)
 
 object Account extends JsonImplicits {
+
+  implicit object AccountEq extends Eq[Account] {
+    override def eqv(x: Account, y: Account): Boolean = x == y
+  }
 
   implicit val AccountDecoder: Decoder[Account] =
     Decoder.forProduct4("id", "email", "merchant", "created")(Account.apply)
@@ -24,6 +34,9 @@ object Account extends JsonImplicits {
   }
 
   object MerchantId {
+    implicit object MerchantIdEq extends Eq[Merchant] {
+      override def eqv(x: Merchant, y: Merchant): Boolean = x == y
+    }
     implicit val MerchantIdDecoder: Decoder[MerchantId] = Decoder.decodeString.map(MerchantId(_))
   }
 
@@ -47,6 +60,10 @@ object Account extends JsonImplicits {
                       created: ZonedDateTime)
 
   object Merchant extends JsonImplicits {
+
+    implicit object MerchantEq extends Eq[Merchant] {
+      override def eqv(x: Merchant, y: Merchant): Boolean = x == y
+    }
 
     implicit val MerchantDecoder: Decoder[Merchant] =
       Decoder.forProduct18(

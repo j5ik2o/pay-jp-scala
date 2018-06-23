@@ -101,6 +101,8 @@ lazy val example = (project in file("example")).settings(
   )
 ) dependsOn library
 
-lazy val `root` = (project in file(".")).settings(
-  name := "pay-jp-scala-project"
-)
+lazy val `root` = (project in file("."))
+  .settings(
+    name := "pay-jp-scala-project"
+  )
+  .aggregate(library, example)

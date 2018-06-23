@@ -16,7 +16,7 @@ pay-jp-scalaは、Scalaで実装された非公式PAY.JPクライアントです
 - Platform API
     - Merchant
     - Transfer 
-    - Charge(TODO)
+    - Charge
 
 ## 主に依存するライブラリ
 
