@@ -530,7 +530,7 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Token](request, secretKey.value, testHeaders)
   }
 
-  override def getTestToken(tokenId: TokenId): Task[Token] = {
+  override def getToken(tokenId: TokenId): Task[Token] = {
     val method  = HttpMethods.GET
     val uri     = Uri(s"/v1/tokens/${tokenId.value}")
     val request = HttpRequest(uri = uri, method = method)

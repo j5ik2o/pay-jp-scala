@@ -5,7 +5,9 @@ import java.time.ZonedDateTime
 import cats.Eq
 import io.circe.{ Decoder, Json }
 
-case class EventId(value: String)
+case class EventId(value: String) {
+  require(value.startsWith("evnt_"))
+}
 
 object EventId {
   implicit object EventIdEq extends Eq[EventId] {

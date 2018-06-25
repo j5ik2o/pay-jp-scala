@@ -352,7 +352,7 @@ trait MerchantApiClient {
     * @param chargeId 支払いID
     * @param amountOpt 金額
     * @param refundReasonOpt 返金理由
-    * @return
+    * @return 支払い
     */
   def refundCharge(chargeId: ChargeId,
                    amountOpt: Option[Amount] = None,
@@ -519,8 +519,28 @@ trait MerchantApiClient {
 
   // --- Event API
 
+  /**
+    * イベントを取得
+    *
+    * @see https://pay.jp/docs/api/#%E3%82%A4%E3%83%99%E3%83%B3%E3%83%88%E6%83%85%E5%A0%B1%E3%82%92%E5%8F%96%E5%BE%97
+    *
+    * @param eventId イベントID
+    * @return イベント
+    */
   def getEvent(eventId: EventId): Task[Event]
 
+  /**
+    * イベントのリストを取得。
+    *
+    * @param resourceIdOpt 取得するeventに紐づくAPIリソースのID (e.g. customer.id)
+    * @param objectOpt     取得するeventに紐づくAPIリソースのobject。値はリソース名(e.g. customer, charge)
+    * @param typeOpt       取得するeventのtype
+    * @param limitOpt      取得するデータ数の最大値(1~100まで)
+    * @param offsetOpt     基準点からのデータ取得を行う開始位置
+    * @param sinceOpt      ここに指定したタイムスタンプ以降に作成されたデータを取得
+    * @param untilOpt      ここに指定したタイムスタンプ以前に作成されたデータを取得
+    * @return イベントのリスト
+    */
   def getEvents(resourceIdOpt: Option[String] = None,
                 objectOpt: Option[String] = None,
                 typeOpt: Option[String] = None,
@@ -569,5 +589,5 @@ trait MerchantApiClient {
     * @param tokenId トークンID
     * @return トークン
     */
-  def getTestToken(tokenId: TokenId): Task[Token]
+  def getToken(tokenId: TokenId): Task[Token]
 }

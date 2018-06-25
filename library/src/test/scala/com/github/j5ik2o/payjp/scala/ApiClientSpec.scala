@@ -126,8 +126,8 @@ class ApiClientSpec
     }
     "Event" in {
       val events = merchantApiClient.getEvents().runAsync.futureValue
-      val event1 = merchantApiClient.getEvent(events.data.head.id)
-      // events.data should contain(event1)
+      val event1 = merchantApiClient.getEvent(events.data.head.id).runAsync.futureValue
+      events.data should contain(event1)
     }
     def testToken(cardNumber: String, expMonth: Int, expYear: Int, cvc: Some[String]) = {
       val token1: Token =
@@ -135,7 +135,7 @@ class ApiClientSpec
           .createTestToken(cardNumber, expMonth, expYear, cvc)
           .runAsync
           .futureValue
-      val token2 = merchantApiClient.getTestToken(token1.id).runAsync.futureValue
+      val token2 = merchantApiClient.getToken(token1.id).runAsync.futureValue
       token2 shouldBe token1
     }
     "Token" - {

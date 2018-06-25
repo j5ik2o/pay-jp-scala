@@ -12,7 +12,7 @@ pay-jp-scalaは、Scalaで実装された非公式PAY.JPクライアントです
     - Charge
     - Subscription
     - Transfer
-    - Event(TODO)
+    - Event
 - Platform API
     - Merchant
     - Transfer 
