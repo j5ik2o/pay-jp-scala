@@ -20,19 +20,19 @@ object ChargeId {
   * @param amount
   * @param currency
   * @param paid
-  * @param expiredAt
+  * @param expiredAtOpt
   * @param captured
-  * @param capturedAt
-  * @param customerId
-  * @param description
-  * @param failureCode
-  * @param failureMessage
+  * @param capturedAtOpt
+  * @param customerIdOpt
+  * @param descriptionOpt
+  * @param failureCodeOpt
+  * @param failureMessageOpt
   * @param refunded
   * @param amountRefunded
-  * @param refundReason
-  * @param subscriptionId
-  * @param metadata
-  * @param platformFee
+  * @param refundReasonOpt
+  * @param subscriptionIdOpt
+  * @param metadataOpt
+  * @param platformFeeOpt
   */
 case class Charge(id: ChargeId,
                   liveMode: Boolean,
@@ -40,19 +40,19 @@ case class Charge(id: ChargeId,
                   amount: Amount,
                   currency: Currency,
                   paid: Boolean,
-                  expiredAt: Option[ZonedDateTime],
+                  expiredAtOpt: Option[ZonedDateTime],
                   captured: Boolean,
-                  capturedAt: Option[ZonedDateTime],
-                  customerId: Option[String],
-                  description: Option[String],
-                  failureCode: Option[String],
-                  failureMessage: Option[String],
+                  capturedAtOpt: Option[ZonedDateTime],
+                  customerIdOpt: Option[String],
+                  descriptionOpt: Option[String],
+                  failureCodeOpt: Option[String],
+                  failureMessageOpt: Option[String],
                   refunded: Boolean,
                   amountRefunded: BigDecimal,
-                  refundReason: Option[String],
-                  subscriptionId: Option[String],
-                  metadata: Option[Map[String, String]],
-                  platformFee: Option[BigDecimal])
+                  refundReasonOpt: Option[String],
+                  subscriptionIdOpt: Option[String],
+                  metadataOpt: Option[Map[String, String]],
+                  platformFeeOpt: Option[BigDecimal])
 
 object Charge extends JsonImplicits {
 

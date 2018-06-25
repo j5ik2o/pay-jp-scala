@@ -18,10 +18,10 @@ object CustomerId {
 
 case class Customer(id: CustomerId,
                     livemode: Boolean,
-                    email: Option[String],
-                    description: Option[String],
-                    defaultCardId: Option[String],
-                    metadata: Option[Map[String, String]],
+                    emailOpt: Option[String],
+                    descriptionOpt: Option[String],
+                    defaultCardIdOpt: Option[String],
+                    metadataOpt: Option[Map[String, String]],
                     cards: Collection[Card],
                     created: ZonedDateTime)
 

@@ -5,6 +5,7 @@ import java.util.UUID
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import cats.implicits._
+import com.github.j5ik2o.payjp.scala.model.PlatformMerchant.OtherFee
 import com.github.j5ik2o.payjp.scala.model._
 import com.github.j5ik2o.payjp.scala.model.merchant._
 import monix.execution.Scheduler.Implicits.global
@@ -31,10 +32,11 @@ class ApiClientSpec
 
   override def afterAll(): Unit = {
     super.afterAll()
+    apiClientBuilder.sender.shutdown()
     TestKit.shutdownActorSystem(system)
   }
 
-  val apiClientBuilder: ApiClientBuilder = new ApiClientBuilder(ApiConfig("api.pay.jp", 443, 3 seconds))
+  val apiClientBuilder: ApiClientContext = new ApiClientContext("api.pay.jp", 443, 3 seconds)
   val merchantApiClient: MerchantApiClient =
     apiClientBuilder.createMerchantApiClient(SecretKey(sys.env("MERCHANT_SECRET_KEY")))
   val platformApiClient: PlatformApiClient =
@@ -63,7 +65,7 @@ class ApiClientSpec
       val products = merchantApiClient.getProducts().runAsync.futureValue
       products.data.exists(_.id == product1.id) shouldBe true
       val product3 = merchantApiClient.updateProduct(product1.id, None, Map("a" -> "1")).runAsync.futureValue
-      product3.metadata should not be product1.metadata
+      product3.metadataOpt should not be product1.metadataOpt
       val deleted = merchantApiClient.deleteProduct(product1.id).runAsync.futureValue
       deleted.deleted shouldBe true
       deleted.id shouldBe product1.id
@@ -83,7 +85,7 @@ class ApiClientSpec
       customers.data.exists(_.id == customer1.id) shouldBe true
       val customer3 =
         merchantApiClient.updateCustomer(customer1.id, emailOpt = Some("test@test.com")).runAsync.futureValue
-      customer3.email should not be customer1.email
+      customer3.emailOpt should not be customer1.emailOpt
       val deleted = merchantApiClient.deleteCustomer(customer1.id).runAsync.futureValue
       deleted.deleted shouldBe true
       deleted.id shouldBe customer1.id
@@ -368,7 +370,7 @@ class ApiClientSpec
             productDetailDocument = None,
             deleteProductDetailDocument = None,
             productPrice = ProductPrice(1000, 5000),
-            businessType = "company",
+            businessType = BusinessType.SoleProp,
             businessName = Name("test", "test"),
             dateOfEstablishment = "2009-12-11",
             businessCapital = 100,
@@ -388,17 +390,57 @@ class ApiClientSpec
             bank = Bank(
               code = "0036",
               branchCode = "210",
-              `type` = "普通",
+              `type` = BankAccountType.Normal,
               accountNumber = "1234567",
-              personName = "Yamada Taro"
+              personName = "ﾔﾏﾀﾞ ﾀﾛｳ"
             ), // Bank,
-            corporateNumber = Some("1234567890123"),
+            corporateNumber = None, //Some("1234567890123"),
             licenseCert = None,
             deleteLicenseCert = None
           )
           .runAsync
           .futureValue
 
+//        Thread.sleep(3 * 1000)
+
+//        platformApiClient
+//          .updatePlatformMerchantAdditional(
+//            accountId = account.id,
+//            dryRun = true,
+//            productType = ProductType.Goods,
+//            chargeType = ChargeType.Charge,
+//            soleProp = true,
+//            dateOfEstablishment = None,
+//            openingBusinessCert = None,
+//            sitePublished = true,
+//            businessSalesLastYear = 1,
+//            businessDetail = "グッズ販売",
+//            shopAddress = Some(
+//              Address(
+//                zip = "150-0043",
+//                state = Name("東京都", "トウキョウ"),
+//                city = Name("渋谷区", "hogehoge"),
+//                line1 = Name("道玄坂2-11-1", "hogehoge"),
+//                line2 = Name("Ｇスクエア4F", "1-1-1")
+//              )
+//            ),
+//            shopPhone = Some("0300000000"),
+//            privacyPolicyUrl = "https://test.com",
+//            sslEnabled = true,
+//            otherFee = Some(
+//              OtherFee(
+//                deliveryFee = 500,
+//                deliveryDetail = "配送料金",
+//                otherFee = 200,
+//                otherFeeDetail = "振り込み手数料"
+//              )
+//            ),
+//            contactPersonLastName = "山田",
+//            contactPersonFirstName = "太郎",
+//            contactPhone = "0300000000"
+//          )
+//          .runAsync
+//          .futureValue
       }
       "testSecretKey" in {
         val platformMerchant1: PlatformMerchant =

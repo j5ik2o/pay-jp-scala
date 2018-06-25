@@ -2,6 +2,7 @@ package com.github.j5ik2o.payjp.scala
 
 import java.time.ZonedDateTime
 
+import com.github.j5ik2o.payjp.scala.model.PlatformMerchant.OtherFee
 import com.github.j5ik2o.payjp.scala.model._
 import com.github.j5ik2o.payjp.scala.model.merchant._
 import monix.eval.Task
@@ -70,7 +71,7 @@ trait PlatformApiClient {
                                   productDetailDocument: Option[String],
                                   deleteProductDetailDocument: Option[Int],
                                   productPrice: ProductPrice,
-                                  businessType: String,
+                                  businessType: BusinessType,
                                   businessName: Name,
                                   dateOfEstablishment: String,
                                   businessCapital: Int,
@@ -87,10 +88,28 @@ trait PlatformApiClient {
                                   deleteLicenseCert: Option[Int]): Task[PlatformMerchant]
 
   /**
+    * マーチャントの追加情報登録。
     *
     * @return
     */
-  def updatePlatformMerchantAdditional(): Task[PlatformMerchant]
+  def updatePlatformMerchantAdditional(accountId: AccountId,
+                                       dryRun: Boolean,
+                                       productType: ProductType,
+                                       chargeType: ChargeType,
+                                       soleProp: Boolean,
+                                       dateOfEstablishment: Option[String],
+                                       openingBusinessCert: Option[String],
+                                       sitePublished: Boolean,
+                                       businessSalesLastYear: Int,
+                                       businessDetail: String,
+                                       shopAddress: Option[Address],
+                                       shopPhone: Option[String],
+                                       privacyPolicyUrl: String,
+                                       sslEnabled: Boolean,
+                                       otherFee: Option[OtherFee],
+                                       contactPersonLastName: String,
+                                       contactPersonFirstName: String,
+                                       contactPhone: String): Task[PlatformMerchant]
 
   /**
     * マーチャントの削除。

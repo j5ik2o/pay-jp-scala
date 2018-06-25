@@ -2,7 +2,8 @@ package com.github.j5ik2o.payjp.scala
 
 import java.time.ZonedDateTime
 
-import akka.http.scaladsl.model.{ FormData, HttpMethods, HttpRequest, Uri }
+import akka.http.scaladsl.model._
+import com.github.j5ik2o.payjp.scala.model.PlatformMerchant.OtherFee
 import com.github.j5ik2o.payjp.scala.model._
 import com.github.j5ik2o.payjp.scala.model.merchant._
 import monix.eval.Task
@@ -53,8 +54,6 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
       .withEntity(FormData(params).toEntity)
     sender.sendRequest[PlatformMerchant](request, secretKey.value)
   }
-
-  override def updatePlatformMerchantAdditional(): Task[PlatformMerchant] = ???
 
   override def deletePlatformMerchant(accountId: AccountId): Task[Deleted[AccountId]] = {
     val method  = HttpMethods.DELETE
@@ -111,7 +110,7 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
                                            productDetailDocument: Option[String],
                                            deleteProductDetailDocument: Option[Int],
                                            productPrice: ProductPrice,
-                                           businessType: String,
+                                           businessType: BusinessType,
                                            businessName: Name,
                                            dateOfEstablishment: String,
                                            businessCapital: Int,
@@ -138,7 +137,7 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
       "product_detail"              -> productDetail,
       "product_price_min"           -> productPrice.min.toString,
       "product_price_max"           -> productPrice.max.toString,
-      "business_type"               -> businessType,
+      "business_type"               -> businessType.entryName,
       "business_name"               -> businessName.value,
       "business_reading_name"       -> businessName.readingName,
       "date_of_establishment"       -> dateOfEstablishment,
@@ -163,7 +162,7 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
       "has_scl_url"                 -> scl.isEmpty.toString,
       "bank_code"                   -> bank.code,
       "bank_branch_code"            -> bank.branchCode,
-      "bank_type"                   -> bank.`type`,
+      "bank_type"                   -> bank.`type`.entryName,
       "bank_account_number"         -> bank.accountNumber,
       "bank_person_name"            -> bank.personName,
     ) ++ usingService.map(v => Map("using_service"                            -> v)).getOrElse(Map.empty) ++
@@ -194,4 +193,76 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
       .withEntity(FormData(params).toEntity)
     sender.sendRequest[PlatformMerchant](request, secretKey.value)
   }
+
+  override def updatePlatformMerchantAdditional(accountId: AccountId,
+                                                dryRun: Boolean,
+                                                productType: ProductType,
+                                                chargeType: ChargeType,
+                                                soleProp: Boolean,
+                                                dateOfEstablishment: Option[String],
+                                                openingBusinessCert: Option[String],
+                                                sitePublished: Boolean,
+                                                businessSalesLastYear: Int,
+                                                businessDetail: String,
+                                                shopAddress: Option[Address],
+                                                shopPhone: Option[String],
+                                                privacyPolicyUrl: String,
+                                                sslEnabled: Boolean,
+                                                otherFee: Option[OtherFee],
+                                                contactPersonLastName: String,
+                                                contactPersonFirstName: String,
+                                                contactPhone: String): Task[PlatformMerchant] = {
+    val method = HttpMethods.POST
+    val path   = s"/v1/platform/merchants/${accountId.value}/applications/additional"
+    val params =
+    Map(
+      "dryrun"                   -> dryRun.toString,
+      "product_type"             -> productType.entryName,
+      "charge_type"              -> chargeType.entryName,
+      "sole_prop"                -> soleProp.toString,
+      "site_published"           -> sitePublished.toString,
+      "business_sales_lastyear"  -> businessSalesLastYear.toString,
+      "business_detail"          -> businessDetail,
+      "has_shop"                 -> shopAddress.isDefined.toString,
+      "privacy_policy_url"       -> privacyPolicyUrl,
+      "ssl_enabled"              -> sslEnabled.toString,
+      "has_other_fee"            -> otherFee.isDefined.toString,
+      "contact_person_lastname"  -> contactPersonLastName,
+      "contact_person_firstname" -> contactPersonFirstName,
+      "contact_phone"            -> contactPhone
+    ) ++ dateOfEstablishment.map(v => Map("date_of_establishment" -> v)).getOrElse(Map.empty) ++
+    openingBusinessCert.map(v => Map("opening_business_cert"      -> v)).getOrElse(Map.empty) ++
+    shopAddress
+      .map(
+        v =>
+          Map(
+            "shop_address_zip"           -> v.zip,
+            "shop_address_state"         -> v.state.value,
+            "shop_address_city"          -> v.city.value,
+            "shop_address_line1"         -> v.line1.value,
+            "shop_address_line2"         -> v.line2.value,
+            "shop_address_reading_state" -> v.state.readingName,
+            "shop_address_reading_city"  -> v.city.readingName,
+            "shop_address_reading_line1" -> v.line1.readingName,
+            "shop_address_reading_line2" -> v.line2.readingName
+        )
+      )
+      .getOrElse(Map.empty) ++
+    shopPhone.map(v => Map("shop_phone" -> v)).getOrElse(Map.empty) ++
+    otherFee
+      .map { v =>
+        Map(
+          "delivery_fee"     -> v.deliveryFee.toString,
+          "delivery_detail"  -> v.deliveryDetail,
+          "other_fee"        -> v.otherFee.toString,
+          "other_fee_detail" -> v.otherFeeDetail.toString
+        )
+      }
+      .getOrElse(Map.empty)
+
+    val request = HttpRequest(uri = path, method = method)
+      .withEntity(FormData(params).toEntity)
+    sender.sendRequest[PlatformMerchant](request, secretKey.value)
+  }
+
 }

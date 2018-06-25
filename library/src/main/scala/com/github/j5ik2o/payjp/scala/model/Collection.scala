@@ -8,12 +8,11 @@ case class Collection[A](count: Int, data: Seq[A], hasMore: Boolean, url: String
 
 object Collection {
 
-  implicit def collectionEq[A]: Eq[Collection[A]] = new Eq[Collection[A]] {
-    override def eqv(x: Collection[A], y: Collection[A]): Boolean = x.data sameElements y.data
-  }
+  implicit def collectionEq[A]: Eq[Collection[A]] =
+    (x: Collection[A], y: Collection[A]) => x.data == y.data
 
   implicit def collectionMonoid[A]: Monoid[Collection[A]] = new Monoid[Collection[A]] {
-    override def empty: Collection[A] = Collection[A](0, Seq.empty, false, "")
+    override def empty: Collection[A] = Collection[A](0, Seq.empty, hasMore = false, "")
 
     override def combine(x: Collection[A], y: Collection[A]): Collection[A] =
       Collection(x.count + y.count, x.data ++ y.data, x.hasMore || y.hasMore, x.url)

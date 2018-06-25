@@ -19,7 +19,7 @@ object TokenId extends JsonImplicits {
 
 }
 
-case class Token(id: TokenId, livemode: Boolean, created: ZonedDateTime, used: Boolean, card: Card)
+case class Token(id: TokenId, livemode: Boolean, used: Boolean, card: Card, created: ZonedDateTime)
 
 object Token extends JsonImplicits {
 
@@ -28,6 +28,6 @@ object Token extends JsonImplicits {
   }
 
   implicit val TokenDecoder: Decoder[Token] =
-    Decoder.forProduct5("id", "livemode", "created", "used", "card")(Token.apply)
+    Decoder.forProduct5("id", "livemode", "used", "card", "created")(Token.apply)
 
 }

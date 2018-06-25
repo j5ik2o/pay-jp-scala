@@ -18,7 +18,7 @@ object AccountId {
   implicit val AccountIdDecoder: Decoder[AccountId] = Decoder.decodeString.map(AccountId(_))
 }
 
-case class Account(id: AccountId, email: Option[String], merchant: Account.Merchant, created: ZonedDateTime)
+case class Account(id: AccountId, emailOpt: Option[String], merchant: Account.Merchant, created: ZonedDateTime)
 
 object Account extends JsonImplicits {
 
@@ -46,17 +46,17 @@ object Account extends JsonImplicits {
                       currenciesSupported: Seq[Currency],
                       defaultCurrency: Currency,
                       detailsSubmitted: Boolean,
-                      businessType: Option[String],
-                      contactPhone: Option[String],
-                      country: Option[String],
-                      chargeType: Option[Seq[String]],
-                      productDetail: Option[String],
-                      productName: Option[String],
-                      productType: Option[Seq[String]],
+                      businessTypeOpt: Option[String],
+                      contactPhoneOpt: Option[String],
+                      countryOpt: Option[String],
+                      chargeTypesOpt: Option[Seq[String]],
+                      productDetailOpt: Option[String],
+                      productNameOpt: Option[String],
+                      productTypesOpt: Option[Seq[String]],
                       liveModeEnabled: Boolean,
-                      liveModeActivatedAt: Option[ZonedDateTime],
-                      sitePublished: Option[Boolean],
-                      url: Option[String],
+                      liveModeActivatedAtOpt: Option[ZonedDateTime],
+                      sitePublishedOpt: Option[Boolean],
+                      urlOpt: Option[String],
                       created: ZonedDateTime)
 
   object Merchant extends JsonImplicits {

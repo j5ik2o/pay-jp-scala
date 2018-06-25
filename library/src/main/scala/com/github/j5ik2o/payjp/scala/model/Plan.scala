@@ -27,7 +27,7 @@ object PlanId {
   * @param nameOpt
   * @param trialDaysOpt
   * @param billingDayOpt
-  * @param metadata
+  * @param metadataOpt
   */
 case class Plan(id: PlanId,
                 liveMode: Boolean,
@@ -37,7 +37,7 @@ case class Plan(id: PlanId,
                 nameOpt: Option[String],
                 trialDaysOpt: Option[Int],
                 billingDayOpt: Option[Int],
-                metadata: Option[Map[String, String]])
+                metadataOpt: Option[Map[String, String]])
 
 object Plan {
 

@@ -24,24 +24,24 @@ object ProductId {
   * @see https://pay.jp/docs/api/#product-%E3%83%97%E3%83%AD%E3%83%80%E3%82%AF%E3%83%88
   *
   * @param id
-  * @param liveMode
-  * @param created
+  * @param livemode
   * @param amount
   * @param currency
   * @param capture
-  * @param invalidAfter
-  * @param metadata
+  * @param invalidAfterOpt
   * @param payCodeUrl
+  * @param metadataOpt
+  * @param created
   */
 case class Product(id: ProductId,
-                   liveMode: Boolean,
-                   created: ZonedDateTime,
+                   livemode: Boolean,
                    amount: Amount,
                    currency: Currency,
                    capture: Boolean,
-                   invalidAfter: Option[ZonedDateTime],
-                   metadata: Option[Map[String, String]],
-                   payCodeUrl: String)
+                   invalidAfterOpt: Option[ZonedDateTime],
+                   payCodeUrl: String,
+                   metadataOpt: Option[Map[String, String]],
+                   created: ZonedDateTime)
 
 object Product extends JsonImplicits {
 
@@ -52,13 +52,13 @@ object Product extends JsonImplicits {
   implicit val ProductDecoder: Decoder[Product] =
     Decoder.forProduct9("id",
                         "livemode",
-                        "created",
                         "amount",
                         "currency",
                         "capture",
                         "invalidAfter",
+                        "paycode_url",
                         "metadata",
-                        "paycode_url")(
+                        "created")(
       Product.apply
     )
 }

@@ -1,5 +1,6 @@
 package com.github.j5ik2o.payjp.scala.model.merchant
 
+import cats.Eq
 import enumeratum._
 
 import scala.collection.immutable
@@ -11,4 +12,9 @@ object GenderType extends Enum[GenderType] {
 
   case object Men   extends GenderType("men")
   case object Woman extends GenderType("woman")
+
+  implicit object GenderTypeEq extends Eq[GenderType] {
+    override def eqv(x: GenderType, y: GenderType): Boolean = x == y
+  }
+
 }

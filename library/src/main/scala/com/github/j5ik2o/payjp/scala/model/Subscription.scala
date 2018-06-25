@@ -27,12 +27,12 @@ object SubscriptionId {
   * @param prorate
   * @param currentPeriodStart
   * @param currentPeriodEnd
-  * @param trialStart
-  * @param trialEnd
-  * @param pausedAt
-  * @param canceledAt
-  * @param resumedAt
-  * @param metadata
+  * @param trialStartOpt
+  * @param trialEndOpt
+  * @param pausedAtOpt
+  * @param canceledAtOpt
+  * @param resumedAtOpt
+  * @param metadataOpt
   */
 case class Subscription(id: SubscriptionId,
                         status: SubscriptionStatusType,
@@ -44,12 +44,12 @@ case class Subscription(id: SubscriptionId,
                         prorate: Boolean,
                         currentPeriodStart: ZonedDateTime,
                         currentPeriodEnd: ZonedDateTime,
-                        trialStart: Option[ZonedDateTime],
-                        trialEnd: Option[ZonedDateTime],
-                        pausedAt: Option[ZonedDateTime],
-                        canceledAt: Option[ZonedDateTime],
-                        resumedAt: Option[ZonedDateTime],
-                        metadata: Option[Map[String, String]])
+                        trialStartOpt: Option[ZonedDateTime],
+                        trialEndOpt: Option[ZonedDateTime],
+                        pausedAtOpt: Option[ZonedDateTime],
+                        canceledAtOpt: Option[ZonedDateTime],
+                        resumedAtOpt: Option[ZonedDateTime],
+                        metadataOpt: Option[Map[String, String]])
 
 object Subscription extends JsonImplicits {
 

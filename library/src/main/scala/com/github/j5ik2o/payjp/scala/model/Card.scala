@@ -19,37 +19,36 @@ object CardId {
   * @param id
   * @param brand
   * @param livemode
-  * @param number
   * @param expYear
   * @param expMonth
-  * @param name
-  * @param country
-  * @param addressZip
-  * @param addressState
-  * @param addressCity
-  * @param addressLine1
-  * @param addressLine2
+  * @param nameOpt
+  * @param countryOpt
+  * @param addressZipOpt
+  * @param addressStateOpt
+  * @param addressCityOpt
+  * @param addressLine1Opt
+  * @param addressLine2Opt
   * @param cvcChecked
   * @param fingerPrint
-  * @param customerId
+  * @param customerIdOpt
   * @param created
   */
 case class Card(id: CardId,
                 brand: String,
                 livemode: Boolean,
-                number: Option[String],
                 expYear: Int,
                 expMonth: Int,
-                name: Option[String],
-                country: Option[String],
-                addressZip: Option[String],
-                addressState: Option[String],
-                addressCity: Option[String],
-                addressLine1: Option[String],
-                addressLine2: Option[String],
+                nameOpt: Option[String],
+                countryOpt: Option[String],
+                addressZipOpt: Option[String],
+                addressZipCheck: Option[String],
+                addressStateOpt: Option[String],
+                addressCityOpt: Option[String],
+                addressLine1Opt: Option[String],
+                addressLine2Opt: Option[String],
                 cvcChecked: String,
                 fingerPrint: String,
-                customerId: Option[CustomerId],
+                customerIdOpt: Option[CustomerId],
                 created: ZonedDateTime)
 
 object Card extends JsonImplicits {
@@ -62,12 +61,12 @@ object Card extends JsonImplicits {
     "id",
     "brand",
     "livemode",
-    "number",
     "exp_year",
     "exp_month",
     "name",
     "country",
     "address_zip",
+    "address_zip_check",
     "address_state",
     "address_city",
     "address_line1",

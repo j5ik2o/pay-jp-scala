@@ -8,9 +8,7 @@ case class Deleted[A](id: A, deleted: Boolean, liveMode: Boolean)
 
 object Deleted {
 
-  implicit def DeletedEq[A] = new Eq[Delete[A]] {
-    override def eqv(x: Delete[A], y: Delete[A]): Boolean = x == y
-  }
+  implicit def DeletedEq[A]: Eq[Delete[A]] = (x: Delete[A], y: Delete[A]) => x == y
 
   implicit def DeleteResponseDecoder[A: Decoder]: Decoder[Deleted[A]] =
     Decoder.forProduct3("id", "deleted", "livemode")(Deleted.apply)

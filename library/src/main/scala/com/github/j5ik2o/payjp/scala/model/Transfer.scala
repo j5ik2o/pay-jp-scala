@@ -25,12 +25,12 @@ case class Transfer(id: TransferId,
                     charges: Collection[Charge],
                     scheduledDate: LocalDate,
                     summary: Summary,
-                    description: Option[String] = None,
+                    descriptionOpt: Option[String] = None,
                     termStart: ZonedDateTime,
                     termEnd: ZonedDateTime,
-                    transferAmount: Option[Int],
-                    transferDate: Option[ZonedDateTime],
-                    carriedBalance: Option[Int])
+                    transferAmountOpt: Option[Int],
+                    transferDateOpt: Option[ZonedDateTime],
+                    carriedBalanceOpt: Option[Int])
 
 object Transfer extends JsonImplicits {
 

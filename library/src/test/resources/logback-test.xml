@@ -14,7 +14,7 @@
 
     <logger name="com.github.j5ik2o.payjp" level="DEBUG" />
 
-    <root level="INFO">
+    <root level="DEBUG">
         <appender-ref ref="ASYNCSTDOUT" />
     </root>
 
