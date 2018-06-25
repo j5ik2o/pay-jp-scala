@@ -8,7 +8,13 @@ import io.circe.Decoder
 case class ChargeId(value: String)
 
 object ChargeId {
-  implicit val ChargeIdDecoder: Decoder[ChargeId] = Decoder.decodeString.map(ChargeId(_))
+
+  implicit object ChargeIdEq extends Eq[ChargeId] {
+    override def eqv(x: ChargeId, y: ChargeId): Boolean = x == y
+  }
+
+  implicit val ChargeIdDecoder: Decoder[ChargeId] = Decoder[String].map(ChargeId(_))
+
 }
 
 /**

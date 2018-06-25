@@ -10,17 +10,20 @@ case class EventId(value: String) {
 }
 
 object EventId {
+
   implicit object EventIdEq extends Eq[EventId] {
     override def eqv(x: EventId, y: EventId): Boolean = x == y
   }
-  implicit val EventIdDecoder: Decoder[EventId] = Decoder.decodeString.map(EventId(_))
+
+  implicit val EventIdDecoder: Decoder[EventId] = Decoder[String].map(EventId(_))
+
 }
 
 case class Event(id: EventId,
-                 livemode: Boolean,
+                 liveMode: Boolean,
                  created: ZonedDateTime,
                  `type`: String,
-                 pendingWebhooks: Int,
+                 pendingWebHooks: Int,
                  data: Json)
 
 object Event extends JsonImplicits {

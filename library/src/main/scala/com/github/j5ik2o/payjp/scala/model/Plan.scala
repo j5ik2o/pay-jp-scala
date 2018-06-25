@@ -8,10 +8,12 @@ case class PlanId(value: String) {
 }
 
 object PlanId {
+
   implicit object PlanIdEq extends Eq[PlanId] {
     override def eqv(x: PlanId, y: PlanId): Boolean = x == y
   }
-  implicit val PlanIdDecoder: Decoder[PlanId] = Decoder.decodeString.map(PlanId(_))
+
+  implicit val PlanIdDecoder: Decoder[PlanId] = Decoder[String].map(PlanId(_))
 }
 
 /**

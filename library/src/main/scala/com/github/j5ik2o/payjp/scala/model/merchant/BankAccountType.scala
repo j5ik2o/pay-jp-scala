@@ -19,6 +19,6 @@ object BankAccountType extends Enum[BankAccountType] {
     override def eqv(x: BankAccountType, y: BankAccountType): Boolean = x == y
   }
 
-  implicit val BankAccountTypeDecoder: Decoder[BankAccountType] = Decoder.decodeString.map(BankAccountType.withName)
+  implicit val BankAccountTypeDecoder: Decoder[BankAccountType] = Decoder[String].map(BankAccountType.withName)
 
 }

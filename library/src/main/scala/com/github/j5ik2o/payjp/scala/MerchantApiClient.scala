@@ -1,6 +1,6 @@
 package com.github.j5ik2o.payjp.scala
 
-import java.time.ZonedDateTime
+import java.time.{ Month, Year, ZonedDateTime }
 
 import com.github.j5ik2o.payjp.scala.model._
 import monix.eval.Task
@@ -88,7 +88,6 @@ trait MerchantApiClient {
                    sinceOpt: Option[ZonedDateTime] = None,
                    untilOpt: Option[ZonedDateTime] = None): Task[Collection[Customer]]
 
-  // --- Plan API
   /**
     * プランを作成。
     *
@@ -161,7 +160,6 @@ trait MerchantApiClient {
                sinceOpt: Option[ZonedDateTime] = None,
                untilOpt: Option[ZonedDateTime] = None): Task[Collection[Plan]]
 
-  // --- Subscription API
   /**
     * 定期課金を作成。
     *
@@ -258,8 +256,6 @@ trait MerchantApiClient {
                        sinceOpt: Option[ZonedDateTime] = None,
                        untilOpt: Option[ZonedDateTime] = None): Task[Collection[Subscription]]
 
-  // --- Customer Subscription API
-
   /**
     * 顧客の定期課金を取得。
     *
@@ -293,7 +289,6 @@ trait MerchantApiClient {
                                    sinceOpt: Option[ZonedDateTime] = None,
                                    untilOpt: Option[ZonedDateTime] = None): Task[Collection[Subscription]]
 
-  // --- Charge API
   /**
     * 支払いを作成。
     *
@@ -418,7 +413,6 @@ trait MerchantApiClient {
                              sinceOpt: Option[ZonedDateTime] = None,
                              untilOpt: Option[ZonedDateTime] = None): Task[Collection[Charge]]
 
-  // --- Product API
   /**
     * プロダクトを作成。
     *
@@ -487,8 +481,6 @@ trait MerchantApiClient {
                   sinceOpt: Option[ZonedDateTime] = None,
                   untilOpt: Option[ZonedDateTime] = None): Task[Collection[Product]]
 
-  // --- Transfer API
-
   /**
     * 入金情報を取得
     *
@@ -516,8 +508,6 @@ trait MerchantApiClient {
                    offsetOpt: Option[Int] = None,
                    sinceOpt: Option[ZonedDateTime] = None,
                    untilOpt: Option[ZonedDateTime] = None): Task[Collection[Transfer]]
-
-  // --- Event API
 
   /**
     * イベントを取得
@@ -549,8 +539,6 @@ trait MerchantApiClient {
                 sinceOpt: Option[ZonedDateTime] = None,
                 untilOpt: Option[ZonedDateTime] = None): Task[Collection[Event]]
 
-  // --- Token API
-
   /**
     * テスト用トークンを作成。
     *
@@ -560,29 +548,29 @@ trait MerchantApiClient {
     * @param expMonth 有効期限(月)
     * @param expYear 有効期限(月)
     * @param cvcOpt CVC
+    * @param nameOpt カード保有者名(e.g. “YUI ARAGAKI”)
+    * @param countryOpt　2桁のISOコード(e.g. JP)
+    * @param addressZipOpt 郵便番号
     * @param addressStateOpt 都道府県
     * @param addressCityOpt 市区町村
     * @param addressLine1Opt 番地など
     * @param addressLine2Opt 建物名など
-    * @param addressZipOpt 郵便番号
-    * @param countryOpt　2桁のISOコード(e.g. JP)
-    * @param nameOpt カード保有者名(e.g. “YUI ARAGAKI”)
     * @return トークン
     */
   def createTestToken(number: String,
-                      expMonth: Int,
-                      expYear: Int,
+                      expMonth: Month,
+                      expYear: Year,
                       cvcOpt: Option[String] = None,
+                      nameOpt: Option[String] = None,
+                      countryOpt: Option[String] = None,
+                      addressZipOpt: Option[String] = None,
                       addressStateOpt: Option[String] = None,
                       addressCityOpt: Option[String] = None,
                       addressLine1Opt: Option[String] = None,
-                      addressLine2Opt: Option[String] = None,
-                      addressZipOpt: Option[String] = None,
-                      countryOpt: Option[String] = None,
-                      nameOpt: Option[String] = None): Task[Token]
+                      addressLine2Opt: Option[String] = None): Task[Token]
 
   /**
-    * テスト用トークン情報を取得。
+    * トークン情報を取得。
     *
     * @see https://pay.jp/docs/api/#%E3%83%88%E3%83%BC%E3%82%AF%E3%83%B3%E6%83%85%E5%A0%B1%E3%82%92%E5%8F%96%E5%BE%97
     *

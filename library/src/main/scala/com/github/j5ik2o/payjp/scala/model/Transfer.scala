@@ -13,7 +13,7 @@ object TransferId {
   implicit object TransferIdEq extends Eq[TransferId] {
     override def eqv(x: TransferId, y: TransferId): Boolean = x == y
   }
-  implicit val TransferDecoder: Decoder[TransferId] = Decoder.decodeString.map(TransferId(_))
+  implicit val TransferDecoder: Decoder[TransferId] = Decoder[String].map(TransferId(_))
 }
 
 case class Transfer(id: TransferId,

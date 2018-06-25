@@ -1,5 +1,5 @@
 package com.github.j5ik2o.payjp.scala
-import java.time.ZonedDateTime
+import java.time._
 
 import akka.http.scaladsl.model._
 import com.github.j5ik2o.payjp.scala.model._
@@ -10,7 +10,13 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     with ApiClientSupport
     with QueryBuildSupport {
 
-  // --- 顧客
+  override def getAccount(): Task[Account] = {
+    val method  = HttpMethods.GET
+    val uri     = Uri(s"/v1/accounts")
+    val request = HttpRequest(uri = uri, method = method)
+    sender.sendRequest[Account](request, secretKey.value)
+  }
+
   override def createCustomer(customerIdOpt: Option[CustomerId],
                               emailOpt: Option[String],
                               descriptionOpt: Option[String],
@@ -68,18 +74,16 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Deleted[CustomerId]](request, secretKey.value)
   }
 
-  override def getCustomers(limit: Option[Int],
-                            offset: Option[Int],
-                            since: Option[ZonedDateTime],
-                            until: Option[ZonedDateTime]): Task[Collection[Customer]] = {
+  override def getCustomers(limitOpt: Option[Int],
+                            offsetOpt: Option[Int],
+                            sinceOpt: Option[ZonedDateTime],
+                            untilOpt: Option[ZonedDateTime]): Task[Collection[Customer]] = {
     val method  = HttpMethods.GET
-    val params  = getParamMap(limit, offset, since, until)
+    val params  = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt)
     val uri     = Uri("/v1/customers").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Customer]](request, secretKey.value)
   }
-
-  // --- 顧客定期課金情報
 
   override def getSubscriptionByCustomerId(customerId: CustomerId,
                                            subscriptionId: SubscriptionId): Task[Subscription] = {
@@ -89,24 +93,21 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Subscription](request, secretKey.value)
   }
 
-  // --- 顧客定期課金情報リスト
   override def getSubscriptionsByCustomerId(customerId: CustomerId,
                                             planIdOpt: Option[PlanId],
                                             statusOpt: Option[SubscriptionStatusType],
-                                            limit: Option[Int],
-                                            offset: Option[Int],
-                                            since: Option[ZonedDateTime],
-                                            until: Option[ZonedDateTime]): Task[Collection[Subscription]] = {
+                                            limitOpt: Option[Int],
+                                            offsetOpt: Option[Int],
+                                            sinceOpt: Option[ZonedDateTime],
+                                            untilOpt: Option[ZonedDateTime]): Task[Collection[Subscription]] = {
     val method = HttpMethods.GET
-    val params = getParamMap(limit, offset, since, until) ++
+    val params = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt) ++
     planIdOpt.map(v => Map("plan"   -> v.value)).getOrElse(Map.empty) ++
     statusOpt.map(v => Map("status" -> v.entryName)).getOrElse(Map.empty)
     val uri     = Uri(s"/v1/customers/${customerId.value}/subscriptions").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Subscription]](request, secretKey.value)
   }
-
-  // ---　プラン
 
   override def createPlan(amount: Amount,
                           currency: Currency,
@@ -163,18 +164,16 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Deleted[PlanId]](request, secretKey.value)
   }
 
-  override def getPlans(limit: Option[Int],
-                        offset: Option[Int],
-                        since: Option[ZonedDateTime],
-                        until: Option[ZonedDateTime]): Task[Collection[Plan]] = {
+  override def getPlans(limitOpt: Option[Int],
+                        offsetOpt: Option[Int],
+                        sinceOpt: Option[ZonedDateTime],
+                        untilOpt: Option[ZonedDateTime]): Task[Collection[Plan]] = {
     val method  = HttpMethods.GET
-    val params  = getParamMap(limit, offset, since, until)
+    val params  = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt)
     val uri     = Uri("/v1/plans").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Plan]](request, secretKey.value)
   }
-
-  // --- 定期課金
 
   override def createSubscription(customerId: CustomerId,
                                   planId: PlanId,
@@ -259,8 +258,6 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Collection[Subscription]](request, secretKey.value)
   }
 
-  // ---
-
   override def createCharge(amountAndCurrencyOpt: Option[(Amount, Currency)],
                             productIdOpt: Option[ProductId],
                             customerIdOpt: Option[CustomerId],
@@ -314,7 +311,7 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
   }
 
   override def updateCharge(chargeId: ChargeId,
-                            description: Option[String] = None,
+                            descriptionOpt: Option[String] = None,
                             metadata: Map[String, String] = Map.empty): Task[Charge] = {
     val method  = HttpMethods.POST
     val path    = s"/v1/charges/${chargeId.value}"
@@ -335,11 +332,11 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Charge](request, secretKey.value)
   }
 
-  override def reAuthCharge(chargeId: ChargeId, expiryDays: Option[Int]): Task[Charge] = {
+  override def reAuthCharge(chargeId: ChargeId, expiryDaysOpt: Option[Int]): Task[Charge] = {
     val method = HttpMethods.POST
     val path   = s"/v1/charges/${chargeId.value}/reauth"
     val params =
-      expiryDays
+      expiryDaysOpt
         .map(v => Map("expiry_days" -> v.toString))
         .getOrElse(Map.empty)
     val request = HttpRequest(uri = path, method = method)
@@ -347,11 +344,11 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Charge](request, secretKey.value)
   }
 
-  override def captureCharge(chargeId: ChargeId, amount: Option[Amount]): Task[Charge] = {
+  override def captureCharge(chargeId: ChargeId, amountOpt: Option[Amount]): Task[Charge] = {
     val method = HttpMethods.POST
     val path   = s"/v1/charges/${chargeId.value}/capture"
     val params =
-      amount
+      amountOpt
         .map(v => Map("expiry_days" -> v.value.toString))
         .getOrElse(Map.empty)
     val request = HttpRequest(uri = path, method = method)
@@ -359,16 +356,16 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Charge](request, secretKey.value)
   }
 
-  def getCharges(customerId: Option[CustomerId],
-                 subscriptionId: Option[String],
-                 limit: Option[Int],
-                 offset: Option[Int],
-                 since: Option[ZonedDateTime],
-                 until: Option[ZonedDateTime]): Task[Collection[Charge]] = {
+  def getCharges(customerIdOpt: Option[CustomerId],
+                 subscriptionIdOpt: Option[String],
+                 limitOpt: Option[Int],
+                 offsetOpt: Option[Int],
+                 sinceOpt: Option[ZonedDateTime],
+                 untilOpt: Option[ZonedDateTime]): Task[Collection[Charge]] = {
     val method = HttpMethods.GET
-    val params = getParamMap(limit, offset, since, until) ++
-    customerId.map(v => Map("customer"   -> v.value)).getOrElse(Map.empty) ++
-    subscriptionId.map(v => Map("status" -> v)).getOrElse(Map.empty)
+    val params = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt) ++
+    customerIdOpt.map(v => Map("customer"   -> v.value)).getOrElse(Map.empty) ++
+    subscriptionIdOpt.map(v => Map("status" -> v)).getOrElse(Map.empty)
     val uri     = Uri("/v1/charges").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Charge]](request, secretKey.value)
@@ -376,14 +373,14 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
 
   override def createProduct(amount: Amount,
                              currency: Currency,
-                             invalidAfter: Option[ZonedDateTime],
-                             capture: Option[Boolean],
+                             invalidAfterOpt: Option[ZonedDateTime],
+                             captureOpt: Option[Boolean],
                              metadata: Map[String, String]): Task[Product] = {
     val method = HttpMethods.POST
     val path   = s"/v1/products"
     val params = Map("amount" -> amount.value.toString(), "currency" -> currency.value) ++
-    invalidAfter.map(v => Map("invalid_after" -> v.toEpochSecond.toString)).getOrElse(Map.empty) ++
-    capture.map(v => Map("capture"            -> v.toString)).getOrElse(Map.empty) ++
+    invalidAfterOpt.map(v => Map("invalid_after" -> v.toEpochSecond.toString)).getOrElse(Map.empty) ++
+    captureOpt.map(v => Map("capture"            -> v.toString)).getOrElse(Map.empty) ++
     metadata
       .map {
         case (key, value) =>
@@ -402,11 +399,11 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
   }
 
   override def updateProduct(productId: ProductId,
-                             invalidAfter: Option[ZonedDateTime],
+                             invalidAfterOpt: Option[ZonedDateTime],
                              metadata: Map[String, String]): Task[Product] = {
     val method = HttpMethods.POST
     val path   = s"/v1/products/${productId.value}"
-    val params = invalidAfter.map(v => Map("invalid_after" -> v.toEpochSecond.toString)).getOrElse(Map.empty) ++
+    val params = invalidAfterOpt.map(v => Map("invalid_after" -> v.toEpochSecond.toString)).getOrElse(Map.empty) ++
     metadata
       .map {
         case (key, value) =>
@@ -424,12 +421,12 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Deleted[ProductId]](request, secretKey.value)
   }
 
-  override def getProducts(limit: Option[Int],
-                           offset: Option[Int],
-                           since: Option[ZonedDateTime],
-                           until: Option[ZonedDateTime]): Task[Collection[Product]] = {
+  override def getProducts(limitOpt: Option[Int],
+                           offsetOpt: Option[Int],
+                           sinceOpt: Option[ZonedDateTime],
+                           untilOpt: Option[ZonedDateTime]): Task[Collection[Product]] = {
     val method  = HttpMethods.GET
-    val params  = getParamMap(limit, offset, since, until)
+    val params  = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt)
     val uri     = Uri("/v1/products").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Product]](request, secretKey.value)
@@ -442,39 +439,32 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Transfer](request, secretKey.value)
   }
 
-  override def getTransfers(status: Option[TransferStatusType],
-                            limit: Option[Int],
-                            offset: Option[Int],
-                            since: Option[ZonedDateTime],
-                            until: Option[ZonedDateTime]): Task[Collection[Transfer]] = {
+  override def getTransfers(statusOpt: Option[TransferStatusType],
+                            limitOpt: Option[Int],
+                            offsetOpt: Option[Int],
+                            sinceOpt: Option[ZonedDateTime],
+                            untilOpt: Option[ZonedDateTime]): Task[Collection[Transfer]] = {
     val method = HttpMethods.GET
-    val params = getParamMap(limit, offset, since, until) ++
-    status.map(v => Map("status" -> v.entryName)).getOrElse(Map.empty)
+    val params = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt) ++
+    statusOpt.map(v => Map("status" -> v.entryName)).getOrElse(Map.empty)
     val uri     = Uri("/v1/transfers").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Transfer]](request, secretKey.value)
   }
 
   override def getChargesByTransferId(transferId: TransferId,
-                                      customerId: Option[CustomerId],
-                                      limit: Option[Int],
-                                      offset: Option[Int],
-                                      since: Option[ZonedDateTime],
-                                      until: Option[ZonedDateTime]): Task[Collection[Charge]] = {
+                                      customerIdOpt: Option[CustomerId],
+                                      limitOpt: Option[Int],
+                                      offsetOpt: Option[Int],
+                                      sinceOpt: Option[ZonedDateTime],
+                                      untilOpt: Option[ZonedDateTime]): Task[Collection[Charge]] = {
     val method = HttpMethods.GET
-    val params = getParamMap(limit, offset, since, until) ++ customerId
+    val params = getParamMap(limitOpt, offsetOpt, sinceOpt, untilOpt) ++ customerIdOpt
       .map(v => Map("customer" -> v.value))
       .getOrElse(Map.empty)
     val uri     = Uri(s"/v1/transfers/${transferId.value}/charges").withQuery(Uri.Query(params))
     val request = HttpRequest(uri = uri, method = method)
     sender.sendRequest[Collection[Charge]](request, secretKey.value)
-  }
-
-  override def getAccount(): Task[Account] = {
-    val method  = HttpMethods.GET
-    val uri     = Uri(s"/v1/accounts")
-    val request = HttpRequest(uri = uri, method = method)
-    sender.sendRequest[Account](request, secretKey.value)
   }
 
   override def getEvent(eventId: EventId): Task[Event] = {
@@ -502,29 +492,29 @@ class MerchantApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     sender.sendRequest[Collection[Event]](request, secretKey.value)
   }
 
-  def createTestToken(number: String,
-                      expMonth: Int,
-                      expYear: Int,
-                      cvc: Option[String],
-                      addressState: Option[String],
-                      addressCity: Option[String],
-                      addressLine1: Option[String],
-                      addressLine2: Option[String],
-                      addressZip: Option[String],
-                      country: Option[String],
-                      name: Option[String]): Task[Token] = {
+  override def createTestToken(number: String,
+                               expMonth: Month,
+                               expYear: Year,
+                               cvcOpt: Option[String] = None,
+                               nameOpt: Option[String] = None,
+                               countryOpt: Option[String] = None,
+                               addressZipOpt: Option[String] = None,
+                               addressStateOpt: Option[String] = None,
+                               addressCityOpt: Option[String] = None,
+                               addressLine1Opt: Option[String] = None,
+                               addressLine2Opt: Option[String] = None): Task[Token] = {
     val method = HttpMethods.POST
     val path   = s"/v1/tokens"
     val params = Map("card[number]" -> number,
-                     "card[exp_month]" -> expMonth.toString,
-                     "card[exp_year]"  -> expYear.toString) ++
-    cvc.map(v => Map("card[cvc]"                    -> v)).getOrElse(Map.empty) ++
-    addressState.map(v => Map("card[address_state]" -> v)).getOrElse(Map.empty) ++
-    addressCity.map(v => Map("card[address_city]"   -> v)).getOrElse(Map.empty) ++
-    addressLine1.map(v => Map("card[address_line1]" -> v)).getOrElse(Map.empty) ++
-    addressLine2.map(v => Map("card[address_line2]" -> v)).getOrElse(Map.empty) ++
-    addressZip.map(v => Map("card[address_zip]"     -> v)).getOrElse(Map.empty) ++
-    name.map(v => Map("card[name]"                  -> v)).getOrElse(Map.empty)
+                     "card[exp_month]" -> expMonth.getValue.toString,
+                     "card[exp_year]"  -> expYear.getValue.toString) ++
+    cvcOpt.map(v => Map("card[cvc]"                    -> v)).getOrElse(Map.empty) ++
+    addressStateOpt.map(v => Map("card[address_state]" -> v)).getOrElse(Map.empty) ++
+    addressCityOpt.map(v => Map("card[address_city]"   -> v)).getOrElse(Map.empty) ++
+    addressLine1Opt.map(v => Map("card[address_line1]" -> v)).getOrElse(Map.empty) ++
+    addressLine2Opt.map(v => Map("card[address_line2]" -> v)).getOrElse(Map.empty) ++
+    addressZipOpt.map(v => Map("card[address_zip]"     -> v)).getOrElse(Map.empty) ++
+    nameOpt.map(v => Map("card[name]"                  -> v)).getOrElse(Map.empty)
     val request = HttpRequest(uri = path, method = method)
       .withEntity(FormData(params).toEntity)
     sender.sendRequest[Token](request, secretKey.value, testHeaders)

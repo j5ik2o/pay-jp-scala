@@ -11,7 +11,7 @@ object SubscriptionId {
   implicit object SubscriptionEq extends Eq[Subscription] {
     override def eqv(x: Subscription, y: Subscription): Boolean = x == y
   }
-  implicit val SubscriptionIdDecoder: Decoder[SubscriptionId] = Decoder.decodeString.map(SubscriptionId(_))
+  implicit val SubscriptionIdDecoder: Decoder[SubscriptionId] = Decoder[String].map(SubscriptionId(_))
 }
 
 /**

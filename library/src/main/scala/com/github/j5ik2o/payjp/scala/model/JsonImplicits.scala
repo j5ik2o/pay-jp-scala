@@ -1,15 +1,18 @@
 package com.github.j5ik2o.payjp.scala.model
 
 import java.time.format.DateTimeFormatter
-import java.time.{ Instant, LocalDate, ZoneId, ZonedDateTime }
+import java.time._
 
 import cats.Eq
 import io.circe.{ Decoder, Encoder }
 
 trait JsonImplicits {
 
-  implicit val fromStringToLocalDateDencoder: Decoder[LocalDate] = Decoder.decodeString.map { v =>
+  implicit val fromStringToLocalDateDecoder: Decoder[LocalDate] = Decoder[String].map { v =>
     LocalDate.parse(v, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+  }
+  implicit val fromStringToYearMonthDecoder: Decoder[YearMonth] = Decoder[String].map { v =>
+    YearMonth.parse(v, DateTimeFormatter.ofPattern("yyyy-MM"))
   }
 
   implicit val ZonedDateTimeEncoder: Encoder[ZonedDateTime] =

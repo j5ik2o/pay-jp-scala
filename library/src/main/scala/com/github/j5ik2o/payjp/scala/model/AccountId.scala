@@ -15,7 +15,7 @@ object AccountId {
     override def eqv(x: AccountId, y: AccountId): Boolean = x == y
   }
 
-  implicit val AccountIdDecoder: Decoder[AccountId] = Decoder.decodeString.map(AccountId(_))
+  implicit val AccountIdDecoder: Decoder[AccountId] = Decoder[String].map(AccountId(_))
 }
 
 case class Account(id: AccountId, emailOpt: Option[String], merchant: Account.Merchant, created: ZonedDateTime)
@@ -34,10 +34,13 @@ object Account extends JsonImplicits {
   }
 
   object MerchantId {
+
     implicit object MerchantIdEq extends Eq[Merchant] {
       override def eqv(x: Merchant, y: Merchant): Boolean = x == y
     }
-    implicit val MerchantIdDecoder: Decoder[MerchantId] = Decoder.decodeString.map(MerchantId(_))
+
+    implicit val MerchantIdDecoder: Decoder[MerchantId] = Decoder[String].map(MerchantId(_))
+
   }
 
   case class Merchant(id: MerchantId,

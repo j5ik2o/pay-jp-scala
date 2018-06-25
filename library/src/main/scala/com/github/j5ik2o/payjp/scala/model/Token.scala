@@ -15,11 +15,11 @@ object TokenId extends JsonImplicits {
     override def eqv(x: TokenId, y: TokenId): Boolean = x == y
   }
 
-  implicit val TokenIdDecoder: Decoder[TokenId] = Decoder.decodeString.map(TokenId(_))
+  implicit val TokenIdDecoder: Decoder[TokenId] = Decoder[String].map(TokenId(_))
 
 }
 
-case class Token(id: TokenId, livemode: Boolean, used: Boolean, card: Card, created: ZonedDateTime)
+case class Token(id: TokenId, liveMode: Boolean, used: Boolean, card: Card, created: ZonedDateTime)
 
 object Token extends JsonImplicits {
 

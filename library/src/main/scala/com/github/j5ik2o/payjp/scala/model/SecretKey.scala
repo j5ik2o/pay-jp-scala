@@ -6,8 +6,11 @@ import io.circe.Decoder
 case class SecretKey(value: String)
 
 object SecretKey {
+
   implicit object SecretKeyEq extends Eq[SecretKey] {
     override def eqv(x: SecretKey, y: SecretKey): Boolean = x == y
   }
-  implicit val SecretKeyDecoder: Decoder[SecretKey] = Decoder.decodeString.map(SecretKey(_))
+
+  implicit val SecretKeyDecoder: Decoder[SecretKey] = Decoder[String].map(SecretKey(_))
+
 }

@@ -17,6 +17,10 @@
     - PlatformMerchant
     - PlatformTransfer 
 
+If you want to know Pay.JP API specification, please refer to the following.
+
+https://pay.jp/docs/started
+
 ## Main library dependency
 
 - akka-http

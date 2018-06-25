@@ -10,7 +10,13 @@ case class CardId(value: String) {
 }
 
 object CardId {
-  implicit val CustomerCardIdDecoder: Decoder[CardId] = Decoder.decodeString.map(CardId(_))
+
+  implicit object CardIdEq extends Eq[CardId] {
+    override def eqv(x: CardId, y: CardId): Boolean = x == y
+  }
+
+  implicit val CustomerCardIdDecoder: Decoder[CardId] = Decoder[String].map(CardId(_))
+
 }
 
 /**
@@ -18,7 +24,7 @@ object CardId {
   *
   * @param id
   * @param brand
-  * @param livemode
+  * @param liveMode
   * @param expYear
   * @param expMonth
   * @param nameOpt
@@ -35,13 +41,13 @@ object CardId {
   */
 case class Card(id: CardId,
                 brand: String,
-                livemode: Boolean,
+                liveMode: Boolean,
                 expYear: Int,
                 expMonth: Int,
                 nameOpt: Option[String],
                 countryOpt: Option[String],
                 addressZipOpt: Option[String],
-                addressZipCheck: Option[String],
+                addressZipCheckOpt: Option[String],
                 addressStateOpt: Option[String],
                 addressCityOpt: Option[String],
                 addressLine1Opt: Option[String],

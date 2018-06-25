@@ -17,5 +17,5 @@ object ChargeType extends Enum[ChargeType] {
     override def eqv(x: ChargeType, y: ChargeType): Boolean = x == y
   }
 
-  implicit val ChargeTypeDecoder: Decoder[ChargeType] = Decoder.decodeString.map(ChargeType.withName)
+  implicit val ChargeTypeDecoder: Decoder[ChargeType] = Decoder[String].map(ChargeType.withName)
 }

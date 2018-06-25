@@ -10,10 +10,12 @@ case class ProductId(value: String) {
 }
 
 object ProductId {
+
   implicit object ProductIdEq extends Eq[ProductId] {
     override def eqv(x: ProductId, y: ProductId): Boolean = x == y
   }
-  implicit val productIdDecoder: Decoder[ProductId] = Decoder.decodeString.map(ProductId(_))
+
+  implicit val productIdDecoder: Decoder[ProductId] = Decoder[String].map(ProductId(_))
 }
 
 /**
@@ -24,7 +26,7 @@ object ProductId {
   * @see https://pay.jp/docs/api/#product-%E3%83%97%E3%83%AD%E3%83%80%E3%82%AF%E3%83%88
   *
   * @param id
-  * @param livemode
+  * @param liveMode
   * @param amount
   * @param currency
   * @param capture
@@ -34,7 +36,7 @@ object ProductId {
   * @param created
   */
 case class Product(id: ProductId,
-                   livemode: Boolean,
+                   liveMode: Boolean,
                    amount: Amount,
                    currency: Currency,
                    capture: Boolean,

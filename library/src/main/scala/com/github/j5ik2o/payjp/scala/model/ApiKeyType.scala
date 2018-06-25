@@ -17,6 +17,6 @@ object ApiKeyType extends Enum[ApiKeyType] {
     override def eqv(x: ApiKeyType, y: ApiKeyType): Boolean = x == y
   }
 
-  implicit val ApiKeyTypeDecoder: Decoder[ApiKeyType] = Decoder.decodeString.map(ApiKeyType.withName)
+  implicit val ApiKeyTypeDecoder: Decoder[ApiKeyType] = Decoder[String].map(ApiKeyType.withName)
 
 }

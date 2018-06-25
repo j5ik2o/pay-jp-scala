@@ -19,5 +19,5 @@ object SubscriptionStatusType extends Enum[SubscriptionStatusType] {
   }
 
   implicit val subscriptionStatusDecoder: Decoder[SubscriptionStatusType] =
-    Decoder.decodeString.map(SubscriptionStatusType.withName)
+    Decoder[String].map(SubscriptionStatusType.withName)
 }

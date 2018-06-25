@@ -11,12 +11,7 @@ import monix.eval.Task
 class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
     extends PlatformApiClient
     with QueryBuildSupport {
-  override def getAccount(): Task[Account] = {
-    val method  = HttpMethods.GET
-    val uri     = Uri(s"/v1/accounts")
-    val request = HttpRequest(uri = uri, method = method)
-    sender.sendRequest[Account](request, secretKey.value)
-  }
+
   override def createPlatformMerchant(name: String): Task[PlatformMerchant] = {
     val method = HttpMethods.POST
     val path   = s"/v1/platform/merchants"
@@ -44,12 +39,12 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
   }
 
   override def updatePlatformMerchantKeys(accountId: AccountId,
-                                          keytype: ApiKeyType,
-                                          accessmode: String,
-                                          timing: String): Task[PlatformMerchant] = {
+                                          keyType: ApiKeyType,
+                                          accessMode: AccessModeType,
+                                          timing: TimingType): Task[PlatformMerchant] = {
     val method = HttpMethods.POST
     val path   = s"/v1/platform/merchants/${accountId.value}/keys"
-    val params = Map("keytype" -> keytype.entryName, "accessmode" -> accessmode, "timing" -> timing)
+    val params = Map("keytype" -> keyType.entryName, "accessmode" -> accessMode.entryName, "timing" -> timing.entryName)
     val request = HttpRequest(uri = path, method = method)
       .withEntity(FormData(params).toEntity)
     sender.sendRequest[PlatformMerchant](request, secretKey.value)

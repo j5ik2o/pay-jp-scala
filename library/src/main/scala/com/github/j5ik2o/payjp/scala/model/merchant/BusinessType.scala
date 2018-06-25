@@ -19,6 +19,6 @@ object BusinessType extends Enum[BusinessType] {
     override def eqv(x: BusinessType, y: BusinessType): Boolean = x == y
   }
 
-  implicit val businessTypeDecoder: Decoder[BusinessType] = Decoder.decodeString.map(BusinessType.withName)
+  implicit val businessTypeDecoder: Decoder[BusinessType] = Decoder[String].map(BusinessType.withName)
 
 }

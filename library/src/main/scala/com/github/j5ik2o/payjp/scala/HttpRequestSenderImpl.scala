@@ -7,14 +7,14 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.headers.{ BasicHttpCredentials, RawHeader }
 import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import akka.stream._
-import akka.stream.scaladsl.{ Flow, GraphDSL, Keep, Sink, Source, Unzip, Zip }
+import akka.stream.scaladsl.{ Flow, GraphDSL, Keep, Sink, Source, SourceQueueWithComplete, Unzip, Zip }
 import io.circe.parser.parse
 import io.circe.{ Decoder, Json }
 import monix.eval.Task
 import org.slf4j.{ Logger, LoggerFactory }
 
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.duration.{ Duration, FiniteDuration }
+import scala.concurrent.{ Await, Future, Promise }
 import scala.util.Try
 
 class HttpRequestSenderImpl(config: ApiClientContext)(implicit system: ActorSystem) extends HttpRequestSender {
@@ -110,9 +110,8 @@ class HttpRequestSenderImpl(config: ApiClientContext)(implicit system: ActorSyst
       FlowShape(unzip.in, zip.out)
     })
 
-  private val (requestQueue, killSwitch) = Source
+  private val requestQueue: SourceQueueWithComplete[PromiseWithHttpRequest] = Source
     .queue[PromiseWithHttpRequest](config.requestBufferSize, OverflowStrategy.dropNew)
-    .viaMat(KillSwitches.single)(Keep.both)
     .map {
       case p @ PromiseWithHttpRequest(_, request) => (request, p)
     }
@@ -125,7 +124,8 @@ class HttpRequestSenderImpl(config: ApiClientContext)(implicit system: ActorSyst
     .run()
 
   override def shutdown(): Unit = {
-    killSwitch.shutdown()
+    requestQueue.complete()
+    Await.result(requestQueue.watchCompletion(), Duration.Inf)
   }
 
   override def sendRequest[A: Decoder](request: HttpRequest,

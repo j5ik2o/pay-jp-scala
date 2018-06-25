@@ -1,6 +1,6 @@
 package com.github.j5ik2o.payjp.scala.model
 
-import java.time.ZonedDateTime
+import java.time.{ LocalDate, ZonedDateTime }
 
 import cats.Eq
 import io.circe.Decoder
@@ -15,7 +15,7 @@ object PlatformTransferId {
     override def eqv(x: PlatformTransferId, y: PlatformTransferId): Boolean = x == y
   }
 
-  implicit val PlatformTransferIdDecoder: Decoder[PlatformTransferId] = Decoder.decodeString.map(PlatformTransferId(_))
+  implicit val PlatformTransferIdDecoder: Decoder[PlatformTransferId] = Decoder[String].map(PlatformTransferId(_))
 
 }
 
@@ -24,7 +24,7 @@ case class PlatformTransfer(id: PlatformTransferId,
                             currency: Currency,
                             status: String,
                             transfers: Seq[Transfer],
-                            scheduledDate: String,
+                            scheduledDate: LocalDate,
                             summary: Summary,
                             termStart: ZonedDateTime,
                             termEnd: ZonedDateTime,

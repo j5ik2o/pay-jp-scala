@@ -10,6 +10,7 @@ sealed abstract class TransferStatusType(override val entryName: String) extends
 
 object TransferStatusType extends Enum[TransferStatusType] {
   override def values: immutable.IndexedSeq[TransferStatusType] = findValues
+
   case object Pending     extends TransferStatusType("pending")
   case object Paid        extends TransferStatusType("paid")
   case object Failed      extends TransferStatusType("failed")
@@ -21,6 +22,6 @@ object TransferStatusType extends Enum[TransferStatusType] {
   }
 
   implicit val TransferStatusDecoder: Decoder[TransferStatusType] =
-    Decoder.decodeString.map(TransferStatusType.withName)
+    Decoder[String].map(TransferStatusType.withName)
 
 }

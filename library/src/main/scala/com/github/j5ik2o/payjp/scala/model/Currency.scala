@@ -8,8 +8,11 @@ case class Currency(value: String) {
 }
 
 object Currency {
+
   implicit object CurrencyEq extends Eq[Currency] {
     override def eqv(x: Currency, y: Currency): Boolean = x == y
   }
+
   implicit val CurrencyDecoder: Decoder[Currency] = Decoder[String].map(Currency(_))
+
 }

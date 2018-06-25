@@ -1,11 +1,11 @@
 package com.github.j5ik2o.payjp.scala
 
+import java.time.{ Month, Year }
 import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import cats.implicits._
-import com.github.j5ik2o.payjp.scala.model.PlatformMerchant.OtherFee
 import com.github.j5ik2o.payjp.scala.model._
 import com.github.j5ik2o.payjp.scala.model.merchant._
 import monix.execution.Scheduler.Implicits.global
@@ -32,15 +32,15 @@ class ApiClientSpec
 
   override def afterAll(): Unit = {
     super.afterAll()
-    apiClientBuilder.sender.shutdown()
+    apiClientContext.shutdownSender()
     TestKit.shutdownActorSystem(system)
   }
 
-  val apiClientBuilder: ApiClientContext = new ApiClientContext("api.pay.jp", 443, 3 seconds)
+  val apiClientContext: ApiClientContext = new ApiClientContext("api.pay.jp", 443, 3 seconds)
   val merchantApiClient: MerchantApiClient =
-    apiClientBuilder.createMerchantApiClient(SecretKey(sys.env("MERCHANT_SECRET_KEY")))
+    apiClientContext.createMerchantApiClient(SecretKey(sys.env("MERCHANT_SECRET_KEY")))
   val platformApiClient: PlatformApiClient =
-    apiClientBuilder.createPlatformApiClient(SecretKey(sys.env("PLATFORM_SECRET_KEY")))
+    apiClientContext.createPlatformApiClient(SecretKey(sys.env("PLATFORM_SECRET_KEY")))
 
   "ApiClient" - {
     "Account" in {
@@ -97,7 +97,10 @@ class ApiClientSpec
           .runAsync
           .futureValue
       val token1: Token = merchantApiClient
-        .createTestToken(number = "4242424242424242", expMonth = 12, expYear = 2020, cvcOpt = Some("123"))
+        .createTestToken(number = "4242424242424242",
+                         expMonth = Month.of(12),
+                         expYear = Year.of(2020),
+                         cvcOpt = Some("123"))
         .runAsync
         .futureValue
       val customer1: Customer = merchantApiClient
@@ -116,7 +119,7 @@ class ApiClientSpec
     }
     "Transfer" in {
       val merchantApiClient: MerchantApiClient =
-        apiClientBuilder.createMerchantApiClient(SecretKey("sk_test_c62fade9d045b54cd76d7036"))
+        apiClientContext.createMerchantApiClient(SecretKey("sk_test_c62fade9d045b54cd76d7036"))
       val transferId = TransferId("tr_8f0c0fe2c9f8a47f9d18f03959ba1")
       val transfer1  = merchantApiClient.getTransfer(transferId).runAsync.futureValue
       val transfers  = merchantApiClient.getTransfers().runAsync.futureValue
@@ -132,7 +135,7 @@ class ApiClientSpec
     def testToken(cardNumber: String, expMonth: Int, expYear: Int, cvc: Some[String]) = {
       val token1: Token =
         merchantApiClient
-          .createTestToken(cardNumber, expMonth, expYear, cvc)
+          .createTestToken(cardNumber, Month.of(expMonth), Year.of(expYear), cvc)
           .runAsync
           .futureValue
       val token2 = merchantApiClient.getToken(token1.id).runAsync.futureValue
@@ -230,7 +233,7 @@ class ApiClientSpec
         val cvc        = Some("123")
         val thrown = the[CardException] thrownBy {
           Await.result(merchantApiClient
-                         .createTestToken(cardNumber, expMonth, expYear, cvc)
+                         .createTestToken(cardNumber, Month.of(expMonth), Year.of(expYear), cvc)
                          .runAsync,
                        Duration.Inf)
         }
@@ -243,7 +246,7 @@ class ApiClientSpec
         val cvc        = Some("123")
         val thrown = the[CardException] thrownBy {
           Await.result(merchantApiClient
-                         .createTestToken(cardNumber, expMonth, expYear, cvc)
+                         .createTestToken(cardNumber, Month.of(expMonth), Year.of(expYear), cvc)
                          .runAsync,
                        Duration.Inf)
         }
@@ -256,7 +259,7 @@ class ApiClientSpec
         val cvc        = Some("123")
         val thrown = the[CardException] thrownBy {
           Await.result(merchantApiClient
-                         .createTestToken(cardNumber, expMonth, expYear, cvc)
+                         .createTestToken(cardNumber, Month.of(expMonth), Year.of(expYear), cvc)
                          .runAsync,
                        Duration.Inf)
         }
@@ -269,7 +272,7 @@ class ApiClientSpec
         val cvc        = Some("123")
         val thrown = the[CardException] thrownBy {
           Await.result(merchantApiClient
-                         .createTestToken(cardNumber, expMonth, expYear, cvc)
+                         .createTestToken(cardNumber, Month.of(expMonth), Year.of(expYear), cvc)
                          .runAsync,
                        Duration.Inf)
         }
@@ -294,7 +297,10 @@ class ApiClientSpec
       "create Charge" in {
         val token1: Token =
           merchantApiClient
-            .createTestToken(number = "4242424242424242", expMonth = 12, expYear = 2020, cvcOpt = Some("123"))
+            .createTestToken(number = "4242424242424242",
+                             expMonth = Month.of(12),
+                             expYear = Year.of(2020),
+                             cvcOpt = Some("123"))
             .runAsync
             .futureValue
         val charge1 = merchantApiClient
@@ -309,7 +315,10 @@ class ApiClientSpec
       "capture Charge" in {
         val token1: Token =
           merchantApiClient
-            .createTestToken(number = "4242424242424242", expMonth = 12, expYear = 2020, cvcOpt = Some("123"))
+            .createTestToken(number = "4242424242424242",
+                             expMonth = Month.of(12),
+                             expYear = Year.of(2020),
+                             cvcOpt = Some("123"))
             .runAsync
             .futureValue
         val charge1 = merchantApiClient
@@ -330,7 +339,10 @@ class ApiClientSpec
       "refund Charge" in {
         val token1: Token =
           merchantApiClient
-            .createTestToken(number = "4242424242424242", expMonth = 12, expYear = 2020, cvcOpt = Some("123"))
+            .createTestToken(number = "4242424242424242",
+                             expMonth = Month.of(12),
+                             expYear = Year.of(2020),
+                             cvcOpt = Some("123"))
             .runAsync
             .futureValue
         val charge1 = merchantApiClient
@@ -365,10 +377,10 @@ class ApiClientSpec
             productName = ProductName("test", "テスト", "test"),
             url = "http://test.com",
             serviceStartAt = "2018-01",
-            usingService = None,
+            usingServiceOpt = None,
             productDetail = "テストサービス",
-            productDetailDocument = None,
-            deleteProductDetailDocument = None,
+            productDetailDocumentOpt = None,
+            deleteProductDetailDocumentOpt = None,
             productPrice = ProductPrice(1000, 5000),
             businessType = BusinessType.SoleProp,
             businessName = Name("test", "test"),
@@ -386,7 +398,7 @@ class ApiClientSpec
               line2 = Name("1-1-1", "1-1-1")
             ), // Address,
             contact = Contact("03-0000-0000", "090-0000-0000"),
-            scl = None,
+            sclOpt = None,
             bank = Bank(
               code = "0036",
               branchCode = "210",
@@ -394,9 +406,9 @@ class ApiClientSpec
               accountNumber = "1234567",
               personName = "ﾔﾏﾀﾞ ﾀﾛｳ"
             ), // Bank,
-            corporateNumber = None, //Some("1234567890123"),
-            licenseCert = None,
-            deleteLicenseCert = None
+            corporateNumberOpt = None, //Some("1234567890123"),
+            licenseCertOpt = None,
+            deleteLicenseCertOpt = None
           )
           .runAsync
           .futureValue
@@ -446,7 +458,7 @@ class ApiClientSpec
         val platformMerchant1: PlatformMerchant =
           platformApiClient.createPlatformMerchant(UUID.randomUUID().toString).runAsync.futureValue
         val merchantApiClient: MerchantApiClient =
-          apiClientBuilder.createMerchantApiClient(platformMerchant1.keys.get.testSecretKey)
+          apiClientContext.createMerchantApiClient(platformMerchant1.keysOpt.get.testSecretKey)
         merchantApiClient.getAccount().runAsync.futureValue
       }
     }

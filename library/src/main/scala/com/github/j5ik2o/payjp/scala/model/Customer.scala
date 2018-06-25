@@ -10,14 +10,17 @@ case class CustomerId(value: String) {
 }
 
 object CustomerId {
+
   implicit object CustomerIdEq extends Eq[CustomerId] {
     override def eqv(x: CustomerId, y: CustomerId): Boolean = x == y
   }
-  implicit val CustomerIdDecoder: Decoder[CustomerId] = Decoder.decodeString.map(CustomerId(_))
+
+  implicit val CustomerIdDecoder: Decoder[CustomerId] = Decoder[String].map(CustomerId(_))
+
 }
 
 case class Customer(id: CustomerId,
-                    livemode: Boolean,
+                    liveMode: Boolean,
                     emailOpt: Option[String],
                     descriptionOpt: Option[String],
                     defaultCardIdOpt: Option[String],
