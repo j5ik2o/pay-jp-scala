@@ -1,8 +1,8 @@
 # pay-jp-scala
 
-pay-jp-scalaは、Scalaで実装された非公式PAY.JPクライアントです。
+`pay-jp-scala` is unofficial pay-jp client implemented by Scala.
 
-## カバーする機能
+## Main features
 
 - Merchat API
     - Account
@@ -14,16 +14,35 @@ pay-jp-scalaは、Scalaで実装された非公式PAY.JPクライアントです
     - Transfer
     - Event
 - Platform API
-    - Merchant
-    - Transfer 
-    - Charge
+    - PlatformMerchant
+    - PlatformTransfer 
 
-## 主に依存するライブラリ
+## Main library dependency
 
 - akka-http
 - akka-stream
 - circe
 - monix
+
+## Installation
+
+Add the following to your sbt build (Scala 2.11.x, and Scala 2.12.x):
+
+### Release Version
+
+```scala
+resolvers += "Sonatype OSS Release Repository" at "https://oss.sonatype.org/content/repositories/releases/"
+
+libraryDependencies += "com.github.j5ik2o" %% "pay-jp-scala" % "1.0.0"
+```
+
+### Snapshot Version
+
+```scala
+resolvers += "Sonatype OSS Snapshot Repository" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
+libraryDependencies += "com.github.j5ik2o" %% "pay-jp-scala" % "1.0.0-SNAPSHOT"
+```
     
 ## 使い方
 

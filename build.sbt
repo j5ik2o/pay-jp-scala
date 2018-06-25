@@ -1,37 +1,29 @@
 val coreSettings = Seq(
-  scalafmtOnCompile in ThisBuild := true,
   sonatypeProfileName := "com.github.j5ik2o",
   organization := "com.github.j5ik2o",
   scalaVersion := "2.12.6",
-  scalacOptions ++= Seq(
-    "-feature",
-    "-deprecation",
-    "-unchecked",
-    "-encoding",
-    "UTF-8",
-    "-language:existentials",
-    "-language:implicitConversions",
-    "-language:postfixOps",
-    "-language:higherKinds",
-    "-Ywarn-adapted-args" // Warn if an argument list is modified to match the receiver
-    ,
-    "-Ywarn-dead-code" // Warn when dead code is identified.
-    ,
-    "-Ywarn-inaccessible" // Warn about inaccessible types in method signatures.
-    ,
-    "-Ywarn-infer-any" // Warn when a type argument is inferred to be `Any`.
-    ,
-    "-Ywarn-nullary-override" // Warn when non-nullary `def f()' overrides nullary `def f'
-    ,
-    "-Ywarn-nullary-unit" // Warn when nullary methods return Unit.
-    ,
-    "-Ywarn-numeric-widen" // Warn when numerics are widened.
-    ,
-    "-Ywarn-unused" // Warn when local and private vals, vars, defs, and types are are unused.
-    ,
-    "-Xmax-classfile-name",
-    "200"
-  ),
+  scalacOptions ++= {
+    Seq(
+      "-feature",
+      "-deprecation",
+      "-unchecked",
+      "-encoding",
+      "UTF-8",
+      "-language:existentials",
+      "-language:implicitConversions",
+      "-language:postfixOps",
+      "-language:higherKinds"
+    ) ++ {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2L, scalaMajor)) if scalaMajor == 12 =>
+          Seq.empty
+        case Some((2L, scalaMajor)) if scalaMajor <= 11 =>
+          Seq(
+            "-Yinline-warnings"
+          )
+      }
+    }
+  },
   publishMavenStyle := true,
   publishArtifact in Test := false,
   pomIncludeRepository := { _ =>
@@ -57,7 +49,7 @@ val coreSettings = Seq(
         </developer>
       </developers>
   },
-  publishTo := sonatypePublishTo.value,
+  publishTo in ThisBuild := sonatypePublishTo.value,
   credentials := {
     val ivyCredentials = (baseDirectory in LocalRootProject).value / ".credentials"
     Credentials(ivyCredentials) :: Nil
@@ -102,6 +94,7 @@ lazy val example = (project in file("example")).settings(
 ) dependsOn library
 
 lazy val `root` = (project in file("."))
+  .settings(coreSettings)
   .settings(
     name := "pay-jp-scala-project"
   )

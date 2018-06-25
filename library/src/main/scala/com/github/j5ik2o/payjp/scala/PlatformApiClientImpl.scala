@@ -164,11 +164,14 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
       "bank_branch_code"            -> bank.branchCode,
       "bank_type"                   -> bank.`type`.entryName,
       "bank_account_number"         -> bank.accountNumber,
-      "bank_person_name"            -> bank.personName,
-    ) ++ usingService.map(v => Map("using_service"                            -> v)).getOrElse(Map.empty) ++
-    productDetailDocument.map(v => Map("product_detail_document"              -> v)).getOrElse(Map.empty) ++
-    deleteProductDetailDocument.map(v => Map("delete_product_detail_document" -> v.toString)).getOrElse(Map.empty) ++
-    scl
+      "bank_person_name"            -> bank.personName
+    ) ++ usingService
+      .map(v => Map("using_service" -> v))
+      .getOrElse(Map.empty) ++ productDetailDocument
+      .map(v => Map("product_detail_document" -> v))
+      .getOrElse(Map.empty) ++ deleteProductDetailDocument
+      .map(v => Map("delete_product_detail_document" -> v.toString))
+      .getOrElse(Map.empty) ++ scl
       .map { v =>
         Map(
           "scl_business_name"       -> v.businessName,
@@ -184,10 +187,13 @@ class PlatformApiClientImpl(val sender: HttpRequestSender, secretKey: SecretKey)
           "scl_url"                 -> v.url
         )
       }
-      .getOrElse(Map.empty) ++
-    licenseCert.map(v => Map("license_cert"              -> v)).getOrElse(Map.empty) ++
-    deleteLicenseCert.map(v => Map("delete_license_cert" -> v.toString)).getOrElse(Map.empty) ++
-    corporateNumber.map(v => Map("corporate_number"      -> v)).getOrElse(Map.empty)
+      .getOrElse(Map.empty) ++ licenseCert
+      .map(v => Map("license_cert" -> v))
+      .getOrElse(Map.empty) ++ deleteLicenseCert
+      .map(v => Map("delete_license_cert" -> v.toString))
+      .getOrElse(Map.empty) ++ corporateNumber
+      .map(v => Map("corporate_number" -> v))
+      .getOrElse(Map.empty)
 
     val request = HttpRequest(uri = path, method = method)
       .withEntity(FormData(params).toEntity)
