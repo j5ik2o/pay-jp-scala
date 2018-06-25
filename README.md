@@ -26,7 +26,7 @@
 
 ## Installation
 
-Add the following to your sbt build (Scala 2.11.x, and Scala 2.12.x):
+Add the following to your sbt build (Scala 2.12.x):
 
 ### Release Version
 
@@ -44,30 +44,31 @@ resolvers += "Sonatype OSS Snapshot Repository" at "https://oss.sonatype.org/con
 libraryDependencies += "com.github.j5ik2o" %% "pay-jp-scala" % "1.0.0-SNAPSHOT"
 ```
     
-## 使い方
+## Usage
 
 ```scala
 import monix.execution.Scheduler.Implicits.global
 import scala.concurrent.Await
-import scala.concurrent.duration._
 
-val apiClientBuilder: ApiClientBuilder   = new ApiClientBuilder(ApiConfig("api.pay.jp", 443, 3 seconds))
-val merchantApiClient: MerchantApiClient = apiClientBuilder.createMerchantApiClient(sys.env("MERCHANT_SECRET_KEY"))
-val platformApiClient: PlatformApiClient = apiClientBuilder.createPlatformApiClient(sys.env("PLATFORM_SECRET_KEY"))
+val apiClientContext: ApiClientContext   = new ApiClientContext("api.pay.jp", 443)
+val merchantApiClient: MerchantApiClient = apiClientContext.createMerchantApiClient(sys.env("MERCHANT_SECRET_KEY"))
+val platformApiClient: PlatformApiClient = apiClientContext.createPlatformApiClient(sys.env("PLATFORM_SECRET_KEY"))
 
-// 支払い(決済)
+// Charge API
 val future = merchantApiClient.createCharge(
   amountAndCurrency = Some((Amount(10000L), Currency("jpy"))), 
   productId = None,
   customerId = Some(user1.id),
-  cardToken = None,
-  description = Some("サービス利用料"),
+  tokenId = None,
+  description = None,
   capture = None,
   expiryDays = None,
   metadata = Map.empty,
   platformFee = None).runAsync
   
 val result = Await.result(future, 3 seconds)
+
+apiClientContext.sender.shutdown()
 ```
  
 
